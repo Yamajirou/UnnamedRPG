@@ -87,21 +87,26 @@ var HUDLayer = cc.Layer.extend({
     _winSize: null,
     _dragSprite: null,
     _dragSpriteTag: null,
+    _dragPosition: null,
     _terrainLayer: "Terrain",
     _objectLayer: "Objects",
+    _hudLayer: "HUDLayer",
     
     init: function(tmxMap) {
+        
         var selfPointer = this;
         //////////////////////////////
         // 1. super init first
         this._super();
         
+        console.log("HUDLayer.init()");
         
         //this.label = new cc.LabelTTF();
         this._tmxMap = tmxMap;
         this._mouseDragged = false;
         this._draggingStartPoint = cc.p(-1, -1);
         this._draggingEndPoint = cc.p(-1, -1);
+        this._dragPosition = cc.p(-1, -1);
         this._currentGID = -1;
         this._isBuilding = false;
         this._dragSpriteTag = "auxSprite";
@@ -147,6 +152,10 @@ var HUDLayer = cc.Layer.extend({
     },
             
     onMouseDown: function(event) {
+
+        if(!this._isBuilding){
+            this.dragPosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
+        }
         
         if (!this.mouseDragged) {
             if(event.getLocation().x > this._menuStartingXOffset){
@@ -176,17 +185,28 @@ var HUDLayer = cc.Layer.extend({
                     this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 250));
                 }
                 console.log("_currentGID = " + this._currentGID);
+                this._dragSprite.setOpacity(130);
                 this.addChild(this._dragSprite, 10, this._dragSpriteTag);
             }
             //TODO check the dragging sprite
             this._draggingStartPoint = event.getLocation();
+            
         }
     },
             
     onMouseDragged: function(event) {
         this._mouseDragged = true;
         if(this._isBuilding){
-            this._dragSprite.setPosition(event.getLocation());
+            var currentDragPosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
+            if(this.dragPosition !== currentDragPosition){
+                console.log("this.dragPosition !== currentDragPosition");
+                var layer = this._tmxMap.getLayer(this._hudLayer);
+                //this._dragSprite.setPosition(event.getLocation());
+                layer.removeTileAt(this.dragPosition);
+                layer.setTileGID(this._currentGID, currentDragPosition, 0);
+                //layer.getTileAt(currentDragPosition).setOpacity(150);
+                this.dragPosition = currentDragPosition;
+            }
         }
         //TODO if(isBuilding) { follow_mouse_with_sprite = true}
         //TODO if(GID != -1){ GID = checkspriteGID()}
@@ -209,7 +229,7 @@ var HUDLayer = cc.Layer.extend({
         console.log("onMouseUp");
         this._label.setString(event.getLocation().x + ", " + event.getLocation().y);
         var pos = event.getLocation();
-        console.log(event.getLocation());
+//        console.log(event.getLocation());
 
         var layer2 = this._tmxMap.getLayer(this._objectLayer);
 
@@ -235,6 +255,11 @@ var HUDLayer = cc.Layer.extend({
                 this._currentGID = -1;
             }
         }
+        if(this._dragPosition.x !== -1){
+            var layer = this._tmxMap.getLayer(this._hudLayer);
+            layer.removeTileAt(this._dragPosition);
+        }
+        this._dragPosition = cc.p(-1, -1);
         this.removeChild(this._dragSprite, true);
         this._mouseDragged = false;
         this._isBuilding = false;
