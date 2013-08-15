@@ -24,6 +24,8 @@ function isoCoordsForPoint(point, layerSizeAux) {
         posX = mapWidth - 1;
     if (posY > mapHeight)
         posY = mapHeight;
+    posX = Math.floor(posX);
+    posY = Math.floor(posY);
     return (new cc.Point(posX, posY));
 }
 ;
@@ -88,6 +90,7 @@ var HUDLayer = cc.Layer.extend({
     _dragSprite: null,
     _dragSpriteTag: null,
     _dragPosition: null,
+    _tileTaken: null,
     _terrainLayer: "Terrain",
     _objectLayer: "Objects",
     _hudLayer: "HUDLayer",
@@ -109,6 +112,7 @@ var HUDLayer = cc.Layer.extend({
         this._dragPosition = cc.p(-1, -1);
         this._currentGID = -1;
         this._isBuilding = false;
+        this._tileTaken = false;
         this._dragSpriteTag = "auxSprite";
         this._winSize = cc.Director.getInstance().getWinSize();
         
@@ -154,7 +158,7 @@ var HUDLayer = cc.Layer.extend({
     onMouseDown: function(event) {
 
         if(!this._isBuilding){
-            this.dragPosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
+            this._dragPosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
         }
         
         if (!this.mouseDragged) {
@@ -169,24 +173,24 @@ var HUDLayer = cc.Layer.extend({
                         event.getLocation().y > this._winSize.height - 200){
                     // sprite 1 - gid=122
                     this._currentGID = 122;
-                    this._dragSprite = cc.Sprite.create(s_isotile, cc.rect((64*1), 64 * 12, 64, 64));
-                    this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 150));
+//                    this._dragSprite = cc.Sprite.create(s_isotile, cc.rect((64*1), 64 * 12, 64, 64));
+//                    this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 150));
                 }else if (event.getLocation().y <= this._winSize.height - 200 && 
                         event.getLocation().y > this._winSize.height - 250){
                     // sprite 2 - gid=125
                     this._currentGID = 125;
-                    this._dragSprite = cc.Sprite.create(s_isotile, cc.rect((64*4), 64 * 12, 64, 64));
-                    this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 200));
+//                    this._dragSprite = cc.Sprite.create(s_isotile, cc.rect((64*4), 64 * 12, 64, 64));
+//                    this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 200));
                 }else if (event.getLocation().y <= this._winSize.height - 250 && 
                         event.getLocation().y > this._winSize.height - 300){
                     // sprite 3 - gid=130
                     this._currentGID = 130;
-                    this._dragSprite = cc.Sprite.create(s_isotile, cc.rect((64*9), 64 * 12, 64, 64));
-                    this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 250));
+//                    this._dragSprite = cc.Sprite.create(s_isotile, cc.rect((64*9), 64 * 12, 64, 64));
+//                    this._dragSprite.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 250));
                 }
                 console.log("_currentGID = " + this._currentGID);
-                this._dragSprite.setOpacity(130);
-                this.addChild(this._dragSprite, 10, this._dragSpriteTag);
+//                this._dragSprite.setOpacity(130);
+//                this.addChild(this._dragSprite, 10, this._dragSpriteTag);
             }
             //TODO check the dragging sprite
             this._draggingStartPoint = event.getLocation();
@@ -198,14 +202,21 @@ var HUDLayer = cc.Layer.extend({
         this._mouseDragged = true;
         if(this._isBuilding){
             var currentDragPosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
-            if(this.dragPosition !== currentDragPosition){
+            if(this._dragPosition !== currentDragPosition){
                 console.log("this.dragPosition !== currentDragPosition");
                 var layer = this._tmxMap.getLayer(this._hudLayer);
                 //this._dragSprite.setPosition(event.getLocation());
-                layer.removeTileAt(this.dragPosition);
+                layer.removeTileAt(this._dragPosition);
                 layer.setTileGID(this._currentGID, currentDragPosition, 0);
-                //layer.getTileAt(currentDragPosition).setOpacity(150);
-                this.dragPosition = currentDragPosition;
+                layer.getTileAt(currentDragPosition).setOpacity(150);
+                var layer2 = this._tmxMap.getLayer(this._objectLayer);
+                if(layer2.getTileGIDAt(currentDragPosition) != 0){
+                    layer.getTileAt(currentDragPosition).setColor(new cc.Color3B(250,50,50));
+                    this._tileTaken = true;
+                }else{
+                    this._tileTaken = false;
+                }
+                this._dragPosition = currentDragPosition;
             }
         }
         //TODO if(isBuilding) { follow_mouse_with_sprite = true}
@@ -238,8 +249,8 @@ var HUDLayer = cc.Layer.extend({
         console.log("layer = " + layer2.getLayerSize().width + ", " + layer2.getLayerSize().height);
         //console.log("layer(" + layer2.width + ", " + layer2.height + ")");
 
-        var pppp = isoCoordsForPoint(pos, layer2.getLayerSize());
-        console.log("pppp(" + pppp.x + ", " + pppp.y + ")");
+        var func1 = isoCoordsForPoint(pos, layer2.getLayerSize());
+        console.log("func1(" + func1.x + ", " + func1.y + ")");
         var tilePosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
         console.log("tilePosFromLocation = " + tilePosition.x + ", " + tilePosition.y);
 
@@ -251,7 +262,10 @@ var HUDLayer = cc.Layer.extend({
 
                 //gid = id do tile; pos = position do tile; flags = ? (numero)
                 //cc.TMXLayer.setTileGID(gid, pos, flags)
-                layer2.setTileGID(this._currentGID, this._draggingEndPoint, 0);
+                if(!this._tileTaken){
+                    layer2.setTileGID(this._currentGID, this._draggingEndPoint, 0);
+                    this._tileTaken = false;
+                }
                 this._currentGID = -1;
             }
         }
