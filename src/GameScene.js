@@ -48,6 +48,12 @@ function tilePosFromLocation(location, tileMap) {
     posX = MIN(tileMap.getMapSize().width - 1, posX);
     posY = MAX(0, posY);
     posY = MIN(tileMap.getMapSize().height - 1, posY);
+    
+//    if(posX < 0 || posX > tileMap.getMapSize().width)
+//        posX = -1;
+//    if(posY < 0 || posY > tileMap.getMapSize().width)
+//        posY = -1;
+    
 
     posX = Math.floor(posX);
     posY = Math.floor(posY);
@@ -77,6 +83,14 @@ function ccpSub(v1, v2)
 }
 ;
 
+ITEM_MENU = 0;
+ITEM1 = "item1";
+ITEM2 = "item2";
+ITEM3 = "item3";
+ITEM4 = "item4";
+ITEM5 = "item5";
+ITEM6 = "item6";
+
 var HUDLayer = cc.Layer.extend({
     _label: null,
     _mouseDragged: null,
@@ -91,6 +105,9 @@ var HUDLayer = cc.Layer.extend({
     _dragSpriteTag: null,
     _dragPosition: null,
     _tileTaken: null,
+    _selectedMenu: null,
+    _menuItensQtd: null,
+    _buildings: null,
     _terrainLayer: "Terrain",
     _objectLayer: "Objects",
     _hudLayer: "HUDLayer",
@@ -115,18 +132,44 @@ var HUDLayer = cc.Layer.extend({
         this._tileTaken = false;
         this._dragSpriteTag = "auxSprite";
         this._winSize = cc.Director.getInstance().getWinSize();
+        this._selectedMenu = ITEM_MENU;
+        this._menuItensQtd = 6;
         
+//        this._buildings = new Array(10);
+        for (var i = 0; i < 10; i++) {
+//          this._buildings[i] = new Array(10);
+          for (var j = 0; j < 10; j++){
+//              this._building[i][j] = null;
+          }
+        }
         
         //cc.LabelTTF.create(label, fontName, fontSize, dimensions, alignment)
         //this.label = cc.LabelTTF.create("alignment left", "Verdana", 32, cc.size(winSize.width, 50), cc.TEXT_ALIGNMENT_LEFT);
         this._label = cc.LabelTTF.create("Label", "Verdana", 20, cc.size(100, 100), cc.TEXT_ALIGNMENT_RIGHT);
         this._label.setPosition(250, 5);
         this.addChild(this._label);
-
+        
+//        var mItem1 = cc.LabelTTF.create("mItem1", "Verdana", 20, cc.size(100, 100), cc.TEXT_ALIGNMENT_RIGHT);
+//        var mItem2 = cc.LabelTTF.create("mItem2", "Verdana", 20, cc.size(100, 100), cc.TEXT_ALIGNMENT_RIGHT);
+//        var mItem1 = cc.MenuItemFont.create("On");
+//        var mItem2 = cc.MenuItemFont.create("Off");
+//        var toggler = cc.MenuItemToggle.create(this, this.aaa, mItem1, mItem2);
+//        var mitem1 = cc.MenuItemToggle.create(
+//            cc.MenuItemFont.create("1"),
+//            cc.MenuItemFont.create("2"),
+//            cc.MenuItemFont.create("3"),
+//            cc.MenuItemFont.create("4"),
+//            cc.MenuItemFont.create("5"));
+//        mitem1.setCallback(this.aaa, this);
+//        var menu12 = cc.Menu.create(mitem1);
+//        this.addChild(menu12);
+//        this.addChild(toggler);
+        
         // ----- Menu ------
-        var menuSprite1 = cc.Sprite.create(s_isotile, cc.rect((64*1), 64 * 12, 64, 64));
-        var menuSprite2 = cc.Sprite.create(s_isotile, cc.rect((64*4), 64 * 12, 64, 64));
-        var menuSprite3 = cc.Sprite.create(s_isotile, cc.rect((64*9), 64 * 12, 64, 64));
+//        initMenu1Layout(this);
+//        var menuSprite1 = cc.Sprite.create(s_isotile, cc.rect((64*1), 64 * 12, 64, 64));
+//        var menuSprite2 = cc.Sprite.create(s_isotile, cc.rect((64*4), 64 * 12, 64, 64));
+//        var menuSprite3 = cc.Sprite.create(s_isotile, cc.rect((64*9), 64 * 12, 64, 64));
         
 //        var menuSpriteSelected1 = cc.Sprite.create(s_isotile, cc.rect(0,64*12+1,64,64));
 //        var menuItem1 = cc.MenuItemSprite.create(menuSprite1, menuSpriteSelected1, this.menuItemFunc, this);
@@ -139,12 +182,34 @@ var HUDLayer = cc.Layer.extend({
 //        menu.setPosition(cc.p(winSize.width - 100, winSize.height - 150));
 //        this.addChild(menu);
 
-        menuSprite1.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 150));
-        menuSprite2.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 200));
-        menuSprite3.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 250));
-        this.addChild(menuSprite1);
-        this.addChild(menuSprite2);
-        this.addChild(menuSprite3);
+//        menuSprite1.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 150));
+//        menuSprite2.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 200));
+//        menuSprite3.setPosition(cc.p(this._winSize.width - 100, this._winSize.height - 250));
+//        this.addChild(menuSprite1);
+//        this.addChild(menuSprite2);
+//        this.addChild(menuSprite3);
+        
+        
+        var closeItem = cc.MenuItemSprite.create(
+            cc.Sprite.create(s_CloseNormal),
+            cc.Sprite.create(s_CloseSelected),
+            function () {
+                console.log("MenuItemSprite " + this);
+//                console.log("replacing scene -> new DungScene" );
+                //cc.Director.getInstance().replaceScene(new DungScene());
+//                this.selected();
+//                this.setEnabled(false);
+//                this.setColor(cc.Color3B(255,0,0));
+//               director.replaceScene(DungScene);
+            },this);
+        closeItem.selected();
+        closeItem.setAnchorPoint(cc.p(0.5, 0.5));
+
+        var menu = cc.Menu.create(closeItem);
+        menu.setPosition(cc.PointZero());
+        this.addChild(menu, 1);
+        closeItem.setPosition(cc.p(this._winSize.width-40, this._winSize.height-40));
+        
 
         // --- enabling mouse and keyboard -----
         //console.log(this.isKeyboardEnabled());
@@ -154,12 +219,22 @@ var HUDLayer = cc.Layer.extend({
         console.log("mouse enable: " + this.isMouseEnabled());
         console.log("keyboard enable: " + this.isKeyboardEnabled());
     },
+    
+//    aaa:function (sender) {
+//        cc.log("Callback called");
+//    },
             
     onMouseDown: function(event) {
 
+        
+
         if(!this._isBuilding){
             this._dragPosition = tilePosFromLocation(event.getLocation(), this._tmxMap);
+        } else {
+            
         }
+        
+        
         
         if (!this.mouseDragged) {
             if(event.getLocation().x > this._menuStartingXOffset){
@@ -210,7 +285,7 @@ var HUDLayer = cc.Layer.extend({
                 layer.setTileGID(this._currentGID, currentDragPosition, 0);
                 layer.getTileAt(currentDragPosition).setOpacity(150);
                 var layer2 = this._tmxMap.getLayer(this._objectLayer);
-                if(layer2.getTileGIDAt(currentDragPosition) != 0){
+                if(layer2.getTileGIDAt(currentDragPosition) !== 0){
                     layer.getTileAt(currentDragPosition).setColor(new cc.Color3B(250,50,50));
                     this._tileTaken = true;
                 }else{
@@ -298,6 +373,47 @@ var HUDLayer = cc.Layer.extend({
         }
     }
 });
+
+
+function initMenu1Layout(sceneLayer){
+    
+    
+    console.log("adding menu itens");
+    
+    if(sceneLayer._selectedMenu !== ITEM_MENU ){
+        for(var i = 0; i < 6; i++){
+//            sceneLayer.removeChildByTag("item" + (i+1), true);
+        }
+    } 
+    
+    
+    var _winSize = cc.Director.getInstance().getWinSize();
+    var spriteSize = cc.p(32, 32);
+    var menuSprite1 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*0), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSprite2 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*1), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSprite3 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*2), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSprite4 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*0), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSprite5 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*1), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSprite6 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*2), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    menuSprite1.setPosition(cc.p(_winSize.width - 88, 300));
+    menuSprite2.setPosition(cc.p(_winSize.width - 44, 300));
+    menuSprite3.setPosition(cc.p(_winSize.width - 88, 250));
+    menuSprite4.setPosition(cc.p(_winSize.width - 44, 250));
+    menuSprite5.setPosition(cc.p(_winSize.width - 88, 200));
+    menuSprite6.setPosition(cc.p(_winSize.width - 44, 200));
+    sceneLayer.addChild(menuSprite1, 1, ITEM1);
+    sceneLayer.addChild(menuSprite2, 1, ITEM2);
+    sceneLayer.addChild(menuSprite3, 1, ITEM3);
+    sceneLayer.addChild(menuSprite4, 1, ITEM4);
+    sceneLayer.addChild(menuSprite5, 1, ITEM5);
+    sceneLayer.addChild(menuSprite6, 1, ITEM6);
+};
+
+function removeMenuItens(scene){
+    for(var i = 0; i < scene._menuItensQtd; i++){
+        scene.removeChildByTag("item" + (i+1));
+    }
+};
 
 
 var GameScene = cc.Scene.extend({
