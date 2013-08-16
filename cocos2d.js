@@ -39,7 +39,10 @@
         //SingleEngineFile:'',
         appFiles:[
             'src/resource.js',
-			'src/GameScene.js',
+            'src/GameScene.js',
+            'src/DungScene.js',
+            'src/Buildings.js',
+            'src/CityHudLayer.js',
             'src/myApp.js'//add your own files in order here
         ]
     };
