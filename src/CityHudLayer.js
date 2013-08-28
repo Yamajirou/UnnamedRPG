@@ -1,6 +1,9 @@
 //MENU TYPES
-ITEM = 0;
-BLACKSMITH = 1;
+ITEM_MENU = 0;
+BLACKSMITH_MENU = 1;
+
+DYNAMIC_MENU_TAG = "DynamicMenu";
+
 
 var CityHudLayer = cc.Layer.extend({
     
@@ -12,6 +15,7 @@ var CityHudLayer = cc.Layer.extend({
     
     _player: null, 
     _winSize: null,
+    
     
     
     // labels
@@ -31,7 +35,7 @@ var CityHudLayer = cc.Layer.extend({
         console.log("CityHudLayer.init()");
         
         // ----------- variable initialization ------------
-        this._currentMenuType = ITEM;
+        this._currentMenuType = ITEM_MENU;
         this._currentMenuItensAmount = 6;
         this._tmxMap = map;
         
@@ -49,7 +53,7 @@ var CityHudLayer = cc.Layer.extend({
         
         // ----------- menu -------------
         this.loadStaticMenu();
-        this.changeDynamicMenu(this._currentMenuType);
+        this.loadDynamicMenu(this._currentMenuType);
         
         
         // ----------- enabling input ---------------
@@ -74,12 +78,22 @@ var CityHudLayer = cc.Layer.extend({
         
     },
         
-    changeDynamicMenu: function(menuType){
+    loadDynamicMenu: function(menuType){
+        if(menuType === this._currentMenuType){
+            return;
+        }
+        var menu;
         switch(menuType){
-            case BLACKSMITH:
+            case BLACKSMITH_MENU:
                 this.loadBlackmisthMenu();
                 break;
         }
+        
+        if(menu){
+            this.removeChildByTag(DYNAMIC_MENU_TAG); //precisa?
+            this.addChild(menu, 1, DYNAMIC_MENU_TAG);
+        }
+        
     },
     
     loadBlacksmithMenu: function(){
