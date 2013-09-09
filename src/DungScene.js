@@ -32,7 +32,7 @@ var DungSceneHudLayer = cc.Layer.extend({
 
 var DungScene = cc.Scene.extend({
     
-    _times: 0,
+    _times: 0, //testing
     
     onEnter:function(){
         this._super();

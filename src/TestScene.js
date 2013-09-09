@@ -33,8 +33,35 @@ var TestScene = cc.Scene.extend({
 //        var l2 = new Layer2();
 //        l2.init();
 //        this.addChild(l2,5,1);
-
+        
+//        var clayer = cc.LayerColor.create(cc.c4b(100, 100, 100, 255), 320, 360);
+//        var clayer2 = cc.LayerColor.create(cc.c4b(0, 0, 100, 255), 320, 360);
+//        
+//
+//        this.addChild(clayer);
+//        this.addChild(clayer2);
+//
+//        clayer.setPosition(50,50);
+//        clayer2.setPosition(150,50);
+//        
+//        var actionTo = cc.MoveTo.create(0.1, cc.p(clayer.getPosition().x + 200, clayer.getPosition().y));
+//        var actionTo2 = cc.MoveTo.create(0.1, cc.p(clayer2.getPosition().x + 200, clayer2.getPosition().y));
+//        clayer.runAction(actionTo);
+//        clayer2.runAction(actionTo2);
+        
+//        console.log("isDone = " + actionTo.isDone());
+//        clayer.scheduleOnce(function(){clayer.setPosition(clayer.getPosition().x - 200, clayer.getPosition().y); console.log("isDone = " + actionTo.isDone());}, 0.5);
+        
         this.addChild(new scrollViewTestLayer());
+//        this.addChild(popupInfo(), 1, 1);
+        
+//        var spriteSize = cc.p(32, 32);
+//        var sprite1 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*3), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+//        var sprite2 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*3), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+//        var menuItem1 = cc.MenuItemSprite.create(sprite1, sprite2, function(){ console.log("popupInfo");}, this);
+//        var menu = cc.Menu.create( menuItem1);
+//        this.addChild(menu);
+        
 
 //        var _winSize = cc.Director.getInstance().getWinSize();
 //        var spriteSize = cc.p(32, 32);

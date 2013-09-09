@@ -167,6 +167,11 @@ var HUDLayer = cc.Layer.extend({
         
         // ----- Menu ------
 //        initMenu1Layout(this);
+        var menu123 = createMenu(this);
+//        menu123.setPosition(cc.p(100,200));
+        var scroll = cc.ScrollView.create(new cc.Size(32, 100), menu123);
+        scroll.setPosition(cc.p(150,200));
+        this.addChild(scroll);
 //        var menuSprite1 = cc.Sprite.create(s_isotile, cc.rect((64*1), 64 * 12, 64, 64));
 //        var menuSprite2 = cc.Sprite.create(s_isotile, cc.rect((64*4), 64 * 12, 64, 64));
 //        var menuSprite3 = cc.Sprite.create(s_isotile, cc.rect((64*9), 64 * 12, 64, 64));
@@ -293,6 +298,12 @@ var HUDLayer = cc.Layer.extend({
                 }
                 this._dragPosition = currentDragPosition;
             }
+        } else {
+            var delta = event.getDelta();
+//            var node = this.getChildByTag(TAG_TILE_MAP);
+            var node = this._tmxMap;
+            var diff = cc.pAdd(delta, node.getPosition());
+            node.setPosition(diff);
         }
         //TODO if(isBuilding) { follow_mouse_with_sprite = true}
         //TODO if(GID != -1){ GID = checkspriteGID()}
@@ -345,8 +356,8 @@ var HUDLayer = cc.Layer.extend({
             }
         }
         if(this._dragPosition.x !== -1){
-            var layer = this._tmxMap.getLayer(this._hudLayer);
-            layer.removeTileAt(this._dragPosition);
+//            var layer = this._tmxMap.getLayer(this._hudLayer);
+//            layer.removeTileAt(this._dragPosition);
         }
         this._dragPosition = cc.p(-1, -1);
         this.removeChild(this._dragSprite, true);
@@ -409,6 +420,46 @@ function initMenu1Layout(sceneLayer){
     sceneLayer.addChild(menuSprite6, 1, ITEM6);
 };
 
+function createMenu(sceneLayer){
+    var menu;
+    
+    var _winSize = cc.Director.getInstance().getWinSize();
+    var spriteSize = cc.p(32, 32);
+    var menuSprite1 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*0), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSpriteSelected1 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*0), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSprite2 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*1), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSpriteSelected2 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*1), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSprite3 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*2), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSpriteSelected3 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*2), spriteSize.y * 0, spriteSize.x, spriteSize.y));
+    var menuSprite4 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*0), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSpriteSelected4 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*0), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSprite5 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*1), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSpriteSelected5 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*1), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSprite6 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*2), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+    var menuSpriteSelected6 = cc.Sprite.create(s_menuItens, cc.rect((spriteSize.x*2), spriteSize.y * 1, spriteSize.x, spriteSize.y));
+//    menuSprite1.setPosition(cc.p(_winSize.width - 88, 300));
+//    menuSprite2.setPosition(cc.p(_winSize.width - 44, 300));
+//    menuSprite3.setPosition(cc.p(_winSize.width - 88, 250));
+//    menuSprite4.setPosition(cc.p(_winSize.width - 44, 250));
+//    menuSprite5.setPosition(cc.p(_winSize.width - 88, 200));
+//    menuSprite6.setPosition(cc.p(_winSize.width - 44, 200));
+    var menuItem1 = cc.MenuItemSprite.create(menuSprite1, menuSpriteSelected1, sceneLayer.menuItemFunc, sceneLayer);
+    var menuItem2 = cc.MenuItemSprite.create(menuSprite2, menuSpriteSelected2, sceneLayer.menuItemFunc, sceneLayer);
+    var menuItem3 = cc.MenuItemSprite.create(menuSprite3, menuSpriteSelected3, sceneLayer.menuItemFunc, sceneLayer);
+    var menuItem4 = cc.MenuItemSprite.create(menuSprite4, menuSpriteSelected4, sceneLayer.menuItemFunc, sceneLayer);
+    var menuItem5 = cc.MenuItemSprite.create(menuSprite5, menuSpriteSelected5, sceneLayer.menuItemFunc, sceneLayer);
+    var menuItem6 = cc.MenuItemSprite.create(menuSprite6, menuSpriteSelected6, sceneLayer.menuItemFunc, sceneLayer);
+    menuItem1.setPosition(16,0);
+    menuItem2.setPosition(16, 50);
+    menuItem3.setPosition(16, 100);
+    menuItem4.setPosition(16, 150);
+//    menu = cc.Menu.create(menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6);
+    menu = cc.Menu.create(menuItem1, menuItem2, menuItem3, menuItem4);
+    
+    return menu;
+}
+
+
 function removeMenuItens(scene){
     for(var i = 0; i < scene._menuItensQtd; i++){
         scene.removeChildByTag("item" + (i+1));
@@ -423,9 +474,13 @@ var GameScene = cc.Scene.extend({
         //var map = cc.TMXTiledMap.create("../mapas/map/mapa1.tmx", "../mapas/map/TileA2.png");
         this.map = new cc.TMXTiledMap();
         this.map.initWithTMXFile(s_SmallMap);
+//        this.map.initWithTMXFile(s_MediumMap);
 
         var layer = new HUDLayer();
         layer.init(this.map);
+        
+        
+        
         
         /*
         var backgroundLayer = new cc.Layer.create();
